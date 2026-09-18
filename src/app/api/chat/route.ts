@@ -78,7 +78,13 @@ export async function POST(req: Request) {
     await db.insert(messagesTable).values({ conversationId, role: "user", content: question });
   }
 
-  const context = await retrieveContext(assistant.id, question);
+  let context;
+  try {
+    context = await retrieveContext(assistant.id, question);
+  } catch (error) {
+    console.error("chat: retrieval failed", error);
+    return json({ error: "The assistant is temporarily unavailable. Please try again." }, 502);
+  }
   const contextBlock = context.map((c) => `- ${c.content}`).join("\n");
 
   const result = streamText({
@@ -86,6 +92,7 @@ export async function POST(req: Request) {
     system: `${assistant.systemPrompt}\n\nRelevant context:\n${contextBlock || "(no matching documents found)"}`,
     messages: await convertToModelMessages(history),
     maxOutputTokens: 500,
+    onError: ({ error }) => console.error("chat: model call failed", error),
     onFinish: async ({ text }) => {
       if (conversationId && text) {
         await db.insert(messagesTable).values({ conversationId, role: "assistant", content: text });
