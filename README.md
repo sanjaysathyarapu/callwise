@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Callwise
 
-## Getting Started
+AI customer support that businesses can train on their own documents. Sign up, create an assistant, upload your docs, and get a chat and voice widget that answers using only your content. A dedicated phone number is planned as a premium tier.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Multi-tenant assistants:** each account creates and manages its own assistants.
+- **Retrieval-augmented answers:** uploaded documents are chunked, embedded, and stored in Postgres with pgvector. Each question retrieves the closest chunks and the model answers from them.
+- **Streaming chat:** responses stream token by token via the Vercel AI SDK.
+- **Voice in the browser:** speech input and spoken replies use the Web Speech API, so voice needs no paid speech vendor. Best supported in Chrome.
+- **Auth:** email and password sign-up and login with Auth.js, bcrypt-hashed passwords, and protected dashboard routes.
+- **Phone tier (in progress):** a Twilio webhook (`/api/twilio/voice`) reuses the same retrieval pipeline. It is written but not yet tested against a live Twilio number.
+
+## Architecture
+
+```
+Browser (chat + mic)
+   |  POST /api/chat  (streaming)
+   v
+Next.js route handler
+   |-- embed question (OpenAI text-embedding-3-small)
+   |-- pgvector cosine search over the assistant's chunks (Neon Postgres)
+   `-- stream answer (gpt-4o-mini) grounded in retrieved context
+
+Twilio call --> POST /api/twilio/voice --> same retrieval + answer path
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4 |
+| Database | Postgres + pgvector on Neon, accessed with Drizzle ORM |
+| AI | OpenAI embeddings and chat completions via the Vercel AI SDK |
+| Auth | Auth.js (NextAuth v5), credentials provider, JWT sessions |
+| Voice | Web Speech API (browser); Twilio `<Gather>` / `<Say>` for phone |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Project layout
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+  app/
+    api/            chat, signup, assistants, documents, twilio, auth routes
+    dashboard/      assistant list and per-assistant knowledge base + chat
+    login/ signup/  auth pages
+  components/       ChatWidget, DocumentUpload, CreateAssistantForm
+  lib/
+    db/             Drizzle schema and client
+    rag/            chunking, embedding, retrieval
+    auth/           Auth.js config (edge-safe split for the proxy)
+  proxy.ts          route protection for /dashboard
+```
 
-## Learn More
+## Running locally
 
-To learn more about Next.js, take a look at the following resources:
+Requires Node 20+, a Neon Postgres database, and an OpenAI API key.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+cp .env.example .env.local   # then fill in the values
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Enable pgvector once in your database, then push the schema:
 
-## Deploy on Vercel
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run db:push
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open http://localhost:3000, create an account, add an assistant, paste in a document, and ask it a question.
+
+### Environment variables
+
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | Neon Postgres connection string |
+| `OPENAI_API_KEY` | Embeddings and chat completions |
+| `AUTH_SECRET` | Auth.js session signing (`npx auth secret`) |
+| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` | Phone tier (optional for now) |
+
+## Status
+
+Working end to end: sign-up, login, assistant creation, document indexing, and grounded chat with browser voice. Still to do: Twilio signature validation and live testing, rate limiting, and Vercel deployment.
