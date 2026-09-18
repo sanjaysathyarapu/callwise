@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth/config";
@@ -28,7 +29,10 @@ export default async function AssistantPage({
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-6 py-16">
       <div>
-        <h1 className="text-2xl font-semibold text-black dark:text-zinc-50">
+        <Link href="/dashboard" className="text-sm text-zinc-500 hover:underline">
+          &larr; All assistants
+        </Link>
+        <h1 className="mt-2 text-2xl font-semibold text-black dark:text-zinc-50">
           {assistant.name}
         </h1>
         <p className="text-sm text-zinc-500">{assistant.tier} tier</p>
