@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { assistants, users } from "@/lib/db/schema";
+import { assistants } from "@/lib/db/schema";
 import { ChatWidget } from "@/components/ChatWidget";
 
 export const dynamic = "force-dynamic";
@@ -17,8 +17,7 @@ async function getDemoAssistant() {
   const [row] = await db
     .select({ id: assistants.id, name: assistants.name })
     .from(assistants)
-    .innerJoin(users, eq(users.id, assistants.ownerId))
-    .where(and(eq(users.email, "demo@callwise.dev"), eq(assistants.name, "Northwind Outfitters")))
+    .where(eq(assistants.slug, "northwind-demo"))
     .limit(1);
   return row ?? null;
 }

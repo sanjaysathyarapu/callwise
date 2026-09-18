@@ -69,12 +69,12 @@ if (!user) {
   [user] = await sql`insert into users (email, password_hash, name) values (${DEMO_EMAIL}, ${hash}, 'Callwise Demo') returning id`;
 }
 
-let [assistant] = await sql`select id from assistants where owner_id = ${user.id} and name = ${NAME}`;
+let [assistant] = await sql`select id from assistants where slug = 'northwind-demo'`;
 if (assistant) {
   await sql`update assistants set system_prompt = ${SYSTEM_PROMPT} where id = ${assistant.id}`;
   await sql`delete from documents where assistant_id = ${assistant.id}`;
 } else {
-  [assistant] = await sql`insert into assistants (owner_id, name, system_prompt) values (${user.id}, ${NAME}, ${SYSTEM_PROMPT}) returning id`;
+  [assistant] = await sql`insert into assistants (owner_id, name, system_prompt, slug) values (${user.id}, ${NAME}, ${SYSTEM_PROMPT}, 'northwind-demo') returning id`;
 }
 
 let total = 0;
