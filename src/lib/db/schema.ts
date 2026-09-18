@@ -5,6 +5,8 @@ import {
   timestamp,
   customType,
   pgEnum,
+  integer,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 
 // pgvector column type — stored as Postgres `vector(1536)` (OpenAI text-embedding-3-small dimension)
@@ -91,3 +93,13 @@ export const messages = pgTable("messages", {
   content: text("content").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+export const rateLimits = pgTable(
+  "rate_limits",
+  {
+    key: text("key").notNull(),
+    windowStart: timestamp("window_start").notNull(),
+    count: integer("count").notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.key, t.windowStart] })]
+);

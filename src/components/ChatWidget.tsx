@@ -1,37 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 
+function speak(text: string) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+}
+
+function friendlyError(error: Error) {
+  try {
+    const parsed = JSON.parse(error.message);
+    if (parsed?.error) return parsed.error as string;
+  } catch {
+    // not a JSON error body
+  }
+  return "Something went wrong. Please try again.";
+}
+
 export function ChatWidget({ assistantId }: { assistantId: string }) {
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status } = useChat({
+  const [conversationId] = useState(() => crypto.randomUUID());
+  const speakNextReply = useRef(false);
+
+  const { messages, sendMessage, status, error } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
-      body: { assistantId },
+      body: { assistantId, conversationId },
     }),
   });
+
+  // Speak a reply once, only when the question was asked by voice.
+  useEffect(() => {
+    if (status !== "ready" || !speakNextReply.current) return;
+    const last = messages[messages.length - 1];
+    if (last?.role !== "assistant") return;
+    speakNextReply.current = false;
+    speak(
+      last.parts
+        .filter((p) => p.type === "text")
+        .map((p) => p.text)
+        .join("")
+    );
+  }, [status, messages]);
+
+  useEffect(() => () => window.speechSynthesis?.cancel(), []);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!input.trim()) return;
-    sendMessage({ text: input });
+    speakNextReply.current = false;
+    sendMessage({ text: input }, { body: { channel: "web_chat" } });
     setInput("");
   }
 
-  function speak(text: string) {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-  }
-
   function listen() {
-    const SpeechRecognitionCtor =
-      (window as unknown as { SpeechRecognition?: typeof window.SpeechRecognition })
-        .SpeechRecognition ??
-      (window as unknown as { webkitSpeechRecognition?: typeof window.SpeechRecognition })
-        .webkitSpeechRecognition;
+    const SpeechRecognitionCtor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
     if (!SpeechRecognitionCtor) {
       alert("Voice input isn't supported in this browser — try Chrome.");
       return;
@@ -39,8 +65,8 @@ export function ChatWidget({ assistantId }: { assistantId: string }) {
     const recognition = new SpeechRecognitionCtor();
     recognition.lang = "en-US";
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      sendMessage({ text: transcript });
+      speakNextReply.current = true;
+      sendMessage({ text: event.results[0][0].transcript }, { body: { channel: "web_voice" } });
     };
     recognition.start();
   }
@@ -48,34 +74,32 @@ export function ChatWidget({ assistantId }: { assistantId: string }) {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
       <div className="flex max-h-96 flex-col gap-3 overflow-y-auto">
-        {messages.map((m) => {
-          const text = m.parts
-            .filter((p) => p.type === "text")
-            .map((p) => p.text)
-            .join("");
-          if (m.role === "assistant" && status === "ready") speak(text);
-          return (
-            <div
-              key={m.id}
-              className={`max-w-[85%] rounded px-3 py-2 text-sm ${
-                m.role === "user"
-                  ? "self-end bg-black text-white dark:bg-white dark:text-black"
-                  : "self-start bg-zinc-100 text-black dark:bg-zinc-900 dark:text-zinc-50"
-              }`}
-            >
-              {text}
-            </div>
-          );
-        })}
-        {status === "streaming" && (
+        {messages.map((m) => (
+          <div
+            key={m.id}
+            className={`max-w-[85%] rounded px-3 py-2 text-sm ${
+              m.role === "user"
+                ? "self-end bg-black text-white dark:bg-white dark:text-black"
+                : "self-start bg-zinc-100 text-black dark:bg-zinc-900 dark:text-zinc-50"
+            }`}
+          >
+            {m.parts
+              .filter((p) => p.type === "text")
+              .map((p) => p.text)
+              .join("")}
+          </div>
+        ))}
+        {(status === "submitted" || status === "streaming") && (
           <p className="text-xs text-zinc-500">Thinking...</p>
         )}
+        {error && <p className="text-xs text-red-600">{friendlyError(error)}</p>}
       </div>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
           className="flex-1 rounded border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
           placeholder="Ask a question..."
           value={input}
+          maxLength={1000}
           onChange={(e) => setInput(e.target.value)}
         />
         <button
