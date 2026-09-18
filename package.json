@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.69",
+    "@ai-sdk/react": "^4.0.108",
     "@neondatabase/serverless": "^1.1.0",
     "ai": "^7.0.105",
     "bcryptjs": "^3.0.3",
