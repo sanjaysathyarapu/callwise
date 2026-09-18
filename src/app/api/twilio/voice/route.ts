@@ -1,12 +1,19 @@
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
+import crypto from "crypto";
 import { db } from "@/lib/db";
-import { assistants } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { assistants, conversations, messages } from "@/lib/db/schema";
+import { count, desc, eq } from "drizzle-orm";
 import { retrieveContext } from "@/lib/rag/retrieve";
 import { rateLimit } from "@/lib/rate-limit";
 import twilio from "twilio";
 import { z } from "zod";
+
+// One stable conversation per call, so every webhook turn of a call shares history.
+function conversationIdFor(callSid: string, assistantId: string) {
+  const h = crypto.createHash("sha1").update(`${assistantId}:${callSid}`).digest("hex");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-5${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`;
+}
 
 // Twilio signs the exact public URL it requested, so rebuild it from the
 // forwarding headers (the internal req.url differs behind Vercel/ngrok).
@@ -54,29 +61,72 @@ export async function POST(req: Request) {
     return twiml(`<Say>Sorry, this assistant is not configured correctly.</Say>`);
   }
 
-  if (!speechResult) {
-    return twiml(`
-      <Gather input="speech" action="/api/twilio/voice?assistantId=${assistant.id}" speechTimeout="auto">
-        <Say>Hi, I'm ${escapeXml(assistant.name)}. How can I help you today?</Say>
-      </Gather>
-    `);
-  }
-
-  const context = await retrieveContext(assistant.id, speechResult);
-  const contextBlock = context.map((c) => `- ${c.content}`).join("\n");
-
-  const { text } = await generateText({
-    model: openai("gpt-4o-mini"),
-    system: `${assistant.systemPrompt}\n\nRelevant context:\n${contextBlock || "(no matching documents found)"}`,
-    prompt: speechResult,
-    maxOutputTokens: 300,
-  });
-
-  return twiml(`
+  const callSid = params.CallSid;
+  const conversationId = callSid ? conversationIdFor(callSid, assistant.id) : null;
+  const gather = (say: string) => twiml(`
     <Gather input="speech" action="/api/twilio/voice?assistantId=${assistant.id}" speechTimeout="auto">
-      <Say>${escapeXml(text)}</Say>
+      <Say>${escapeXml(say)}</Say>
     </Gather>
   `);
+
+  if (!speechResult) {
+    let turns = 0;
+    if (conversationId) {
+      const [row] = await db
+        .select({ n: count() })
+        .from(messages)
+        .where(eq(messages.conversationId, conversationId));
+      turns = row.n;
+    }
+    return gather(
+      turns > 0
+        ? "Sorry, I didn't catch that. Ask me anything else, or hang up any time."
+        : `Hi, I'm ${assistant.name}. How can I help you today?`
+    );
+  }
+
+  try {
+    let history: { role: "user" | "assistant"; content: string }[] = [];
+    if (conversationId) {
+      await db
+        .insert(conversations)
+        .values({
+          id: conversationId,
+          assistantId: assistant.id,
+          channel: "phone",
+          callerIdentifier: params.From ?? null,
+        })
+        .onConflictDoNothing();
+      const recent = await db
+        .select({ role: messages.role, content: messages.content })
+        .from(messages)
+        .where(eq(messages.conversationId, conversationId))
+        .orderBy(desc(messages.createdAt))
+        .limit(6);
+      history = recent.reverse();
+    }
+
+    const context = await retrieveContext(assistant.id, speechResult);
+    const contextBlock = context.map((c) => `- ${c.content}`).join("\n");
+
+    const { text } = await generateText({
+      model: openai("gpt-4o-mini"),
+      system: `${assistant.systemPrompt}\n\nRelevant context:\n${contextBlock || "(no matching documents found)"}`,
+      messages: [...history, { role: "user", content: speechResult }],
+      maxOutputTokens: 300,
+    });
+
+    if (conversationId) {
+      await db.insert(messages).values([
+        { conversationId, role: "user", content: speechResult },
+        { conversationId, role: "assistant", content: text },
+      ]);
+    }
+    return gather(text);
+  } catch (error) {
+    console.error("twilio: failed to answer", error);
+    return gather("Sorry, I'm having trouble right now. Could you ask that again?");
+  }
 }
 
 function twiml(inner: string) {

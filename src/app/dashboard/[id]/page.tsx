@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth/config";
 import { db } from "@/lib/db";
 import { assistants, documents } from "@/lib/db/schema";
 import { DocumentUpload } from "@/components/DocumentUpload";
+import { DocumentList } from "@/components/DocumentList";
 import { ChatWidget } from "@/components/ChatWidget";
 
 export default async function AssistantPage({
@@ -38,13 +39,10 @@ export default async function AssistantPage({
           Knowledge base
         </h2>
         <DocumentUpload assistantId={assistant.id} />
-        <ul className="flex flex-col gap-1">
-          {docs.map((d) => (
-            <li key={d.id} className="text-sm text-zinc-600 dark:text-zinc-400">
-              {d.filename}
-            </li>
-          ))}
-        </ul>
+        <DocumentList
+          assistantId={assistant.id}
+          docs={docs.map((d) => ({ id: d.id, filename: d.filename }))}
+        />
       </section>
 
       <section className="flex flex-col gap-3">

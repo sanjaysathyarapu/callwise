@@ -1,15 +1,19 @@
 # Callwise
 
-AI customer support that businesses can train on their own documents. Sign up, create an assistant, upload your docs, and get a chat and voice widget that answers using only your content. A dedicated phone number is planned as a premium tier.
+AI customer support that businesses can train on their own documents. Sign up, create an assistant, upload your docs, and get a chat and voice assistant that answers using only your content. A dedicated phone number is the premium tier.
+
+**Live demo:** https://callwise-three.vercel.app/demo (a fictional outdoor-gear store, no sign-up needed)
 
 ## Features
 
-- **Multi-tenant assistants:** each account creates and manages its own assistants.
-- **Retrieval-augmented answers:** uploaded documents are chunked, embedded, and stored in Postgres with pgvector. Each question retrieves the closest chunks and the model answers from them.
+- **Multi-tenant assistants:** each account creates and manages its own assistants; nothing is shared between businesses.
+- **Bring your own documents:** upload PDF, Word (.docx), text, Markdown or CSV files, or paste text. Files are parsed, chunked, embedded and stored in Postgres with pgvector.
+- **Grounded answers:** each question retrieves the closest chunks and the model answers only from them, and says so when it doesn't know.
 - **Streaming chat:** responses stream token by token via the Vercel AI SDK.
 - **Voice in the browser:** speech input and spoken replies use the Web Speech API, so voice needs no paid speech vendor. Best supported in Chrome.
-- **Auth:** email and password sign-up and login with Auth.js, bcrypt-hashed passwords, and protected dashboard routes.
-- **Phone tier (in progress):** a Twilio webhook (`/api/twilio/voice`) reuses the same retrieval pipeline. It is written but not yet tested against a live Twilio number.
+- **Phone tier:** a Twilio number routes calls to the same retrieval pipeline. Twilio's built-in speech recognition and text-to-speech handle the audio, calls keep conversation memory across turns, and every call is logged.
+- **Auth:** email and password sign-up with Auth.js, bcrypt-hashed passwords, and protected dashboard routes.
+- **Abuse protection:** Twilio request signatures are verified, chat and uploads are rate limited (Postgres-backed counters), and input, history and output sizes are capped.
 
 ## Architecture
 
@@ -82,4 +86,8 @@ Open http://localhost:3000, create an account, add an assistant, paste in a docu
 
 ## Status
 
-Working end to end: sign-up, login, assistant creation, document indexing, and grounded chat with browser voice. Still to do: Twilio signature validation and live testing, rate limiting, and Vercel deployment.
+Deployed on Vercel with Neon Postgres. Working end to end: sign-up, login, assistant management, file and text indexing, grounded chat with browser voice, and a phone line with call memory. Self-serve number provisioning per business is not built; the phone tier is demonstrated with a single Twilio number.
+
+## Seeding the demo
+
+`node scripts/seed-demo.mjs` creates the fictional "Northwind Outfitters" business and its knowledge base used by the /demo page.
