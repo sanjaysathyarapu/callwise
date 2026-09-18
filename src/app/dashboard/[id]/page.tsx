@@ -35,7 +35,12 @@ export default async function AssistantPage({
         <h1 className="mt-2 text-2xl font-semibold text-black dark:text-zinc-50">
           {assistant.name}
         </h1>
-        <p className="text-sm text-zinc-500">{assistant.tier} tier</p>
+        <p className="text-sm text-zinc-500">
+          {assistant.tier} tier ·{" "}
+          <Link href={`/dashboard/${assistant.id}/conversations`} className="underline">
+            View conversations
+          </Link>
+        </p>
       </div>
 
       <section className="flex flex-col gap-3">
