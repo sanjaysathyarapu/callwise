@@ -20,7 +20,13 @@ function friendlyError(error: Error) {
   return "Something went wrong. Please try again.";
 }
 
-export function ChatWidget({ assistantId }: { assistantId: string }) {
+export function ChatWidget({
+  assistantId,
+  suggestions = [],
+}: {
+  assistantId: string;
+  suggestions?: string[];
+}) {
   const [input, setInput] = useState("");
   const [conversationId] = useState(() => crypto.randomUUID());
   const speakNextReply = useRef(false);
@@ -94,6 +100,23 @@ export function ChatWidget({ assistantId }: { assistantId: string }) {
         )}
         {error && <p className="text-xs text-red-600">{friendlyError(error)}</p>}
       </div>
+      {messages.length === 0 && suggestions.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {suggestions.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => {
+                speakNextReply.current = false;
+                sendMessage({ text: s }, { body: { channel: "web_chat" } });
+              }}
+              className="rounded-full border border-zinc-300 px-3 py-1 text-xs text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
           className="flex-1 rounded border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
