@@ -12,7 +12,9 @@ AI customer support that businesses can train on their own documents. Sign up, c
 - **Streaming chat:** responses stream token by token via the Vercel AI SDK.
 - **Voice in the browser:** speech input and spoken replies use the Web Speech API, so voice needs no paid speech vendor. Best supported in Chrome.
 - **Phone tier:** a Twilio number routes calls to the same retrieval pipeline. Twilio's built-in speech recognition and text-to-speech handle the audio, calls keep conversation memory across turns, and every call is logged.
-- **Auth:** email and password sign-up with Auth.js, bcrypt-hashed passwords, and protected dashboard routes.
+- **App shell and dashboard:** a sidebar layout with live stats, a 14-day activity chart, a setup checklist and recent conversations, plus per-assistant Overview, Knowledge, Test, Conversations, Deploy and Settings tabs.
+- **Deploy anywhere:** every assistant gets a public chat page, a one-line website chat bubble (`widget.js`) and an iframe embed.
+- **Auth:** email and password sign-up with Auth.js (server actions, bcrypt-hashed passwords, rate-limited attempts), session-aware navigation, and protected routes that return you to where you were going.
 - **Abuse protection:** Twilio request signatures are verified, chat and uploads are rate limited (Postgres-backed counters), and input, history and output sizes are capped.
 
 ## Architecture
@@ -31,7 +33,7 @@ Twilio call --> POST /api/twilio/voice --> same retrieval + answer path
 
 | Layer | Choice |
 |---|---|
-| Framework | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4 |
+| Framework | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, shadcn/ui |
 | Database | Postgres + pgvector on Neon, accessed with Drizzle ORM |
 | AI | OpenAI embeddings and chat completions via the Vercel AI SDK |
 | Auth | Auth.js (NextAuth v5), credentials provider, JWT sessions |
@@ -42,15 +44,21 @@ Twilio call --> POST /api/twilio/voice --> same retrieval + answer path
 ```
 src/
   app/
-    api/            chat, signup, assistants, documents, twilio, auth routes
-    dashboard/      assistant list and per-assistant knowledge base + chat
-    login/ signup/  auth pages
-  components/       ChatWidget, DocumentUpload, CreateAssistantForm
+    (marketing)/    landing page and public demo
+    (auth)/         login and signup (redirect away when logged in)
+    (app)/          authenticated app: dashboard, assistants/[id]/*, conversations
+    a/[slug]        public chat page for an assistant
+    embed/[slug]    embeddable chat used by the chat bubble and iframe
+    api/            chat, documents, twilio and auth route handlers
+  components/       UI (shadcn/ui on Base UI), chat widget, dashboard pieces
   lib/
     db/             Drizzle schema and client
-    rag/            chunking, embedding, retrieval
-    auth/           Auth.js config (edge-safe split for the proxy)
-  proxy.ts          route protection for /dashboard
+    rag/            chunking, embedding, retrieval, file text extraction
+    auth/           Auth.js config and login/signup server actions
+    actions/        server actions for assistants
+    data/           dashboard and conversation queries
+  proxy.ts          route protection with a return-to-page redirect
+public/widget.js    the embeddable chat bubble
 ```
 
 ## Running locally

@@ -3,7 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { edgeAuthConfig } from "./edge-config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -22,7 +22,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const [user] = await db
           .select()
           .from(users)
-          .where(eq(users.email, email))
+          .where(sql`lower(${users.email}) = ${email.toLowerCase()}`)
           .limit(1);
         if (!user) return null;
 

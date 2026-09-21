@@ -49,6 +49,7 @@ export const assistants = pgTable("assistants", {
   tier: tierEnum("tier").notNull().default("free"),
   twilioNumber: text("twilio_number"),
   slug: text("slug").unique(),
+  greeting: text("greeting"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

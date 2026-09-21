@@ -81,7 +81,7 @@ export async function POST(req: Request) {
     return gather(
       turns > 0
         ? "Sorry, I didn't catch that. Ask me anything else, or hang up any time."
-        : `Hi, I'm ${assistant.name}. How can I help you today?`
+        : assistant.greeting ?? `Hi, I'm ${assistant.name}. How can I help you today?`
     );
   }
 
