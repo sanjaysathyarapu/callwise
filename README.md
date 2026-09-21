@@ -14,7 +14,8 @@ AI customer support that businesses can train on their own documents. Sign up, c
 - **Phone tier:** a Twilio number routes calls to the same retrieval pipeline. Twilio's built-in speech recognition and text-to-speech handle the audio, calls keep conversation memory across turns, and every call is logged.
 - **App shell and dashboard:** a sidebar layout with live stats, a 14-day activity chart, a setup checklist and recent conversations, plus per-assistant Overview, Knowledge, Test, Conversations, Deploy and Settings tabs.
 - **Deploy anywhere:** every assistant gets a public chat page, a one-line website chat bubble (`widget.js`) and an iframe embed.
-- **Auth:** email and password sign-up with Auth.js (server actions, bcrypt-hashed passwords, rate-limited attempts), session-aware navigation, and protected routes that return you to where you were going.
+- **Auth and account:** email and password sign-up with Auth.js (server actions, bcrypt-hashed passwords, rate-limited attempts), session-aware navigation, and protected routes that return you to where you were going. Account settings cover profile, password change, sign out of all devices (server-side session revocation), data export and account deletion.
+- **Conversations inbox:** filter by assistant, channel and date range, search message text, load more, and delete conversations.
 - **Abuse protection:** Twilio request signatures are verified, chat and uploads are rate limited (Postgres-backed counters), and input, history and output sizes are capped.
 
 ## Architecture

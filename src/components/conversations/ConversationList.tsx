@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { LocalTime } from "@/components/LocalTime";
+import { DeleteConversationButton } from "@/components/conversations/DeleteConversationButton";
 import type { ConversationItem } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +46,7 @@ export function ConversationList({
                   {m.content}
                 </div>
               ))}
+              <DeleteConversationButton id={c.id} />
             </div>
           </details>
         </li>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MobileNav } from "@/components/app/MobileNav";
 import { SidebarNav } from "@/components/app/SidebarNav";
@@ -12,8 +13,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-screen">
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-6 border-r bg-card px-3 py-5 md:flex">
-        <Link href="/dashboard" className="px-3 text-lg font-semibold tracking-tight">
-          Callwise
+        <Link href="/dashboard" className="px-3" aria-label="Callwise dashboard">
+          <Logo />
         </Link>
         <SidebarNav />
         <div className="mt-auto flex flex-col gap-1 px-3 text-xs text-muted-foreground">
@@ -26,8 +27,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <header className="flex h-14 items-center justify-between gap-3 border-b px-4 md:px-8">
           <div className="flex items-center gap-2">
             <MobileNav />
-            <Link href="/dashboard" className="font-semibold tracking-tight md:hidden">
-              Callwise
+            <Link href="/dashboard" className="md:hidden" aria-label="Callwise dashboard">
+              <Logo />
             </Link>
           </div>
           <div className="flex items-center gap-2">

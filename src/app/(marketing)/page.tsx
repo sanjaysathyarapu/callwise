@@ -3,7 +3,7 @@ import { BarChart3, Code2, FileUp, MessagesSquare, Mic, Phone, ShieldCheck, Uplo
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { auth } from "@/lib/auth/config";
+import { getCurrentUser } from "@/lib/data";
 
 const steps = [
   { icon: Upload, title: "Add your knowledge", body: "Upload PDFs, Word docs or paste text. Callwise indexes everything for instant lookup." },
@@ -21,8 +21,7 @@ const features = [
 ];
 
 export default async function HomePage() {
-  const session = await auth();
-  const authed = Boolean(session?.user);
+  const authed = Boolean(await getCurrentUser());
 
   return (
     <div className="flex flex-col">

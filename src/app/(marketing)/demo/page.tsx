@@ -3,7 +3,7 @@ import Link from "next/link";
 import { eq } from "drizzle-orm";
 import { buttonVariants } from "@/components/ui/button";
 import { ChatWidget } from "@/components/ChatWidget";
-import { auth } from "@/lib/auth/config";
+import { getCurrentUser } from "@/lib/data";
 import { db } from "@/lib/db";
 import { assistants } from "@/lib/db/schema";
 
@@ -27,8 +27,8 @@ async function getDemoAssistant() {
 }
 
 export default async function DemoPage() {
-  const [assistant, session] = await Promise.all([getDemoAssistant(), auth()]);
-  const authed = Boolean(session?.user);
+  const [assistant, user] = await Promise.all([getDemoAssistant(), getCurrentUser()]);
+  const authed = Boolean(user);
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-6 py-14">

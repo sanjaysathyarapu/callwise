@@ -3,14 +3,29 @@ import { notFound, redirect } from "next/navigation";
 import { and, asc, count, desc, eq, gte, inArray, max, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth/config";
 import { db } from "@/lib/db";
-import { assistants, chunks, conversations, documents, messages } from "@/lib/db/schema";
+import { assistants, chunks, conversations, documents, messages, users } from "@/lib/db/schema";
 
 export type Channel = "phone" | "web_voice" | "web_chat";
 
-export async function requireUser() {
+// The signed-in user, read fresh from the database. Returns null when there is no
+// session or when the session was revoked (password change, "sign out everywhere").
+export const getCurrentUser = cache(async () => {
   const session = await auth();
-  if (!session?.user?.id) redirect("/login");
-  return session.user;
+  const id = session?.user?.id;
+  if (!id) return null;
+  const [row] = await db
+    .select({ id: users.id, name: users.name, email: users.email, sessionVersion: users.sessionVersion })
+    .from(users)
+    .where(eq(users.id, id))
+    .limit(1);
+  if (!row || row.sessionVersion !== (session.user.sv ?? 0)) return null;
+  return { id: row.id, name: row.name, email: row.email };
+});
+
+export async function requireUser() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  return user;
 }
 
 // Deduplicated per request, so a layout and its page can both call it.
@@ -121,9 +136,14 @@ export interface ConversationItem {
 export async function getConversations(opts: {
   assistantIds: string[];
   channel?: Channel;
+  search?: string;
+  since?: Date;
   limit?: number;
 }): Promise<ConversationItem[]> {
   if (opts.assistantIds.length === 0) return [];
+
+  // Escape LIKE wildcards so a search for "50%" matches literally.
+  const pattern = opts.search ? `%${opts.search.replace(/[\\%_]/g, (c) => "\\" + c)}%` : null;
 
   const rows = await db
     .select({
@@ -139,7 +159,11 @@ export async function getConversations(opts: {
     .where(
       and(
         inArray(conversations.assistantId, opts.assistantIds),
-        opts.channel ? eq(conversations.channel, opts.channel) : undefined
+        opts.channel ? eq(conversations.channel, opts.channel) : undefined,
+        opts.since ? gte(conversations.createdAt, opts.since) : undefined,
+        pattern
+          ? sql`exists (select 1 from messages m where m.conversation_id = ${conversations.id} and m.content ilike ${pattern})`
+          : undefined
       )
     )
     .orderBy(desc(conversations.createdAt))

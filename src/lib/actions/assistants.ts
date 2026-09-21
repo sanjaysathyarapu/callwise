@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { auth } from "@/lib/auth/config";
+import { getCurrentUser } from "@/lib/data";
 import { db } from "@/lib/db";
 import { assistants } from "@/lib/db/schema";
 import { makeSlug } from "@/lib/slug";
@@ -12,8 +12,7 @@ import { makeSlug } from "@/lib/slug";
 export type ActionResult = { ok: true; id?: string } | { ok: false; error: string };
 
 async function userId() {
-  const session = await auth();
-  return session?.user?.id ?? null;
+  return (await getCurrentUser())?.id ?? null;
 }
 
 const MAX_ASSISTANTS_PER_USER = 10;

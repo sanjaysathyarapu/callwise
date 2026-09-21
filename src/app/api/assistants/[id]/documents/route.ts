@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { and, count, eq } from "drizzle-orm";
-import { auth } from "@/lib/auth/config";
+import { getCurrentUser } from "@/lib/data";
 import { db } from "@/lib/db";
 import { assistants, documents, chunks } from "@/lib/db/schema";
 import { chunkText, embedChunks } from "@/lib/rag/embed";
@@ -27,11 +27,11 @@ function fail(error: string, status: number) {
 }
 
 export async function GET(_req: Request, ctx: Params) {
-  const session = await auth();
-  if (!session?.user) return fail("Unauthorized", 401);
+  const user = await getCurrentUser();
+  if (!user) return fail("Unauthorized", 401);
 
   const { id } = await ctx.params;
-  if (!(await requireOwnedAssistant(id, session.user.id))) return fail("Not found", 404);
+  if (!(await requireOwnedAssistant(id, user.id))) return fail("Not found", 404);
 
   const rows = await db.select().from(documents).where(eq(documents.assistantId, id));
   return NextResponse.json(rows);
@@ -43,13 +43,13 @@ const pasteSchema = z.object({
 });
 
 export async function POST(req: Request, ctx: Params) {
-  const session = await auth();
-  if (!session?.user) return fail("Unauthorized", 401);
+  const user = await getCurrentUser();
+  if (!user) return fail("Unauthorized", 401);
 
   const { id } = await ctx.params;
-  if (!(await requireOwnedAssistant(id, session.user.id))) return fail("Not found", 404);
+  if (!(await requireOwnedAssistant(id, user.id))) return fail("Not found", 404);
 
-  const limit = await rateLimit(`upload:user:${session.user.id}:hour`, 30, 3600);
+  const limit = await rateLimit(`upload:user:${user.id}:hour`, 30, 3600);
   if (!limit.ok) return tooManyRequests(limit.retryAfterSeconds);
 
   const [{ total }] = await db

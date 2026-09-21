@@ -1,6 +1,7 @@
 "use client";
 
-import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { LogOut, Settings } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -23,6 +24,7 @@ function initials(name: string) {
 }
 
 export function UserMenu({ name, email }: { name: string; email: string }) {
+  const router = useRouter();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50" aria-label="Account menu">
@@ -38,6 +40,10 @@ export function UserMenu({ name, email }: { name: string; email: string }) {
           </DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => router.push("/settings")}>
+          <Settings />
+          Account settings
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => void logoutAction()}>
           <LogOut />
           Log out

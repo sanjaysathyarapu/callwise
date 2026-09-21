@@ -7,11 +7,17 @@ export const edgeAuthConfig: NextAuthConfig = {
   pages: { signIn: "/login" },
   callbacks: {
     jwt({ token, user }) {
-      if (user) token.id = user.id;
+      if (user) {
+        token.id = user.id;
+        token.sv = user.sv ?? 0;
+      }
       return token;
     },
     session({ session, token }) {
-      if (session.user) session.user.id = token.id as string;
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.sv = Number(token.sv ?? 0);
+      }
       return session;
     },
   },

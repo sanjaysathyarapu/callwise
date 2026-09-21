@@ -74,6 +74,17 @@ export function SignupForm() {
         {pending && <Loader2 className="animate-spin" />}
         {pending ? "Creating account..." : "Create account"}
       </Button>
+      <p className="text-center text-xs text-muted-foreground">
+        By creating an account you agree to the{" "}
+        <Link href="/terms" className="underline underline-offset-4">
+          Terms
+        </Link>{" "}
+        and{" "}
+        <Link href="/privacy" className="underline underline-offset-4">
+          Privacy Policy
+        </Link>
+        .
+      </p>
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link href="/login" className="font-medium text-foreground underline underline-offset-4">

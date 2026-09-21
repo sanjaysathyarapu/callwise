@@ -1,18 +1,18 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { buttonVariants } from "@/components/ui/button";
-import { auth } from "@/lib/auth/config";
+import { getCurrentUser } from "@/lib/data";
 
 export default async function MarketingLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth();
-  const authed = Boolean(session?.user);
+  const authed = Boolean(await getCurrentUser());
 
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
         <nav className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-6">
-          <Link href="/" className="text-lg font-semibold tracking-tight">
-            Callwise
+          <Link href="/" aria-label="Callwise home">
+            <Logo />
           </Link>
           <div className="flex items-center gap-1">
             <Link href="/demo" className={buttonVariants({ variant: "ghost" })}>
@@ -37,8 +37,21 @@ export default async function MarketingLayout({ children }: { children: React.Re
         </nav>
       </header>
       <main className="flex-1">{children}</main>
-      <footer className="border-t py-6 text-center text-xs text-muted-foreground">
-        Callwise is a portfolio project. The demo store is fictional.
+      <footer className="border-t py-6">
+        <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-3 px-6 text-xs text-muted-foreground sm:flex-row">
+          <p>Callwise is a portfolio project. The demo store is fictional.</p>
+          <nav className="flex gap-4" aria-label="Legal">
+            <Link href="/demo" className="hover:text-foreground">
+              Demo
+            </Link>
+            <Link href="/privacy" className="hover:text-foreground">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-foreground">
+              Terms
+            </Link>
+          </nav>
+        </div>
       </footer>
     </div>
   );

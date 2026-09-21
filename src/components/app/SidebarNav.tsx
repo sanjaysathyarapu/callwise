@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, LayoutDashboard, MessagesSquare } from "lucide-react";
+import { Bot, LayoutDashboard, MessagesSquare, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/assistants", label: "Assistants", icon: Bot },
   { href: "/conversations", label: "Conversations", icon: MessagesSquare },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
