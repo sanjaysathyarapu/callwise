@@ -45,7 +45,7 @@ export default async function ConversationsInboxPage({
       <ConversationFilters assistants={assistants.map((a) => ({ id: a.id, name: a.name }))} />
 
       {items.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-16 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed bg-card py-16 text-center">
           <MessagesSquare className="size-8 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
             {filtered ? "No conversations match these filters." : "Nothing here yet. Conversations appear as customers chat or call."}

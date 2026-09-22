@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
+import { BrandScatter } from "@/components/BrandScatter";
 import { ChatWidget } from "@/components/ChatWidget";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { db } from "@/lib/db";
@@ -25,6 +26,7 @@ export default async function PublicAssistantPage({ params }: { params: Promise<
 
   return (
     <div className="flex min-h-screen flex-col">
+      <BrandScatter />
       <header className="flex items-center justify-between px-6 py-4">
         <span className="font-semibold tracking-tight">{assistant.name}</span>
         <ThemeToggle />

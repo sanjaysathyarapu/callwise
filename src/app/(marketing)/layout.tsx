@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandScatter } from "@/components/BrandScatter";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { buttonVariants } from "@/components/ui/button";
@@ -9,6 +10,7 @@ export default async function MarketingLayout({ children }: { children: React.Re
 
   return (
     <div className="flex min-h-screen flex-col">
+      <BrandScatter />
       <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
         <nav className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-6">
           <Link href="/" aria-label="Callwise home">

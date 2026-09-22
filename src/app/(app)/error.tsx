@@ -5,7 +5,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 
 export default function AppError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed py-20 text-center">
+    <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed bg-card py-20 text-center">
       <div className="flex flex-col gap-1">
         <h1 className="text-xl font-semibold">Something went wrong</h1>
         <p className="max-w-sm text-sm text-muted-foreground">

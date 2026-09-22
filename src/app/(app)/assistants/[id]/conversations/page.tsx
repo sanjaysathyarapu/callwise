@@ -39,7 +39,7 @@ export default async function AssistantConversationsPage({
     <div className="flex flex-col gap-4">
       <ConversationFilters />
       {items.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-16 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed bg-card py-16 text-center">
           <MessagesSquare className="size-8 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
             {filtered

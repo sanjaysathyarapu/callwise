@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/data";
+import { BrandScatter } from "@/components/BrandScatter";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -10,6 +11,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
 
   return (
     <div className="flex min-h-screen flex-col">
+      <BrandScatter />
       <header className="flex items-center justify-between px-6 py-4">
         <Link href="/" aria-label="Callwise home">
           <Logo />

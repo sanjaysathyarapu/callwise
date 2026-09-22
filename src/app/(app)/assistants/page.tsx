@@ -21,7 +21,7 @@ export default async function AssistantsPage() {
         <NewAssistantDialog />
       </div>
       {assistants.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-16 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed bg-card py-16 text-center">
           <Bot className="size-8 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">No assistants yet.</p>
           <NewAssistantDialog label="Create assistant" />

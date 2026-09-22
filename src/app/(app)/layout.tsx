@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandScatter } from "@/components/BrandScatter";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MobileNav } from "@/components/app/MobileNav";
@@ -12,6 +13,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen">
+      <BrandScatter />
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-6 border-r bg-card px-3 py-5 md:flex">
         <Link href="/dashboard" className="px-3" aria-label="Callwise dashboard">
           <Logo />

@@ -151,7 +151,7 @@ export default async function DashboardPage() {
               </Link>
             </div>
             {recent.length === 0 ? (
-              <p className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
+              <p className="rounded-xl border border-dashed bg-card p-6 text-sm text-muted-foreground">
                 No conversations yet. Try your assistant from its Test tab, or share its public link.
               </p>
             ) : (
