@@ -15,15 +15,16 @@ interface Bubble {
 
 // Confined to the outer ~20% margins and corners of the viewport — nothing sits in
 // the central column, so it never lands behind headline or body text. Opacity is
-// deliberately near-invisible (~2-3%); this is texture, not an illustration.
+// low (~8-12%) but should read as a visible detail at normal viewing size, not
+// require a zoomed screenshot to notice.
 const BUBBLES: Bubble[] = [
-  { top: "6%", left: "3%", size: 46, rotate: -12, opacity: 0.028 },
-  { top: "15%", left: "9%", size: 24, rotate: 10, opacity: 0.022 },
-  { top: "8%", right: "5%", size: 34, rotate: 16, opacity: 0.025 },
-  { top: "22%", right: "2%", size: 20, rotate: -18, opacity: 0.02 },
-  { bottom: "12%", left: "4%", size: 28, rotate: 9, opacity: 0.022 },
-  { bottom: "6%", right: "7%", size: 42, rotate: -10, opacity: 0.028 },
-  { bottom: "20%", right: "2%", size: 18, rotate: 22, opacity: 0.02 },
+  { top: "6%", left: "3%", size: 50, rotate: -12, opacity: 0.12 },
+  { top: "16%", left: "10%", size: 26, rotate: 10, opacity: 0.09 },
+  { top: "8%", right: "5%", size: 38, rotate: 16, opacity: 0.11 },
+  { top: "23%", right: "2%", size: 22, rotate: -18, opacity: 0.08 },
+  { bottom: "13%", left: "4%", size: 30, rotate: 9, opacity: 0.09 },
+  { bottom: "6%", right: "7%", size: 46, rotate: -10, opacity: 0.12 },
+  { bottom: "21%", right: "2%", size: 20, rotate: 22, opacity: 0.08 },
 ];
 
 // A static, server-rendered brand texture. No client JS, no theme-specific code —
