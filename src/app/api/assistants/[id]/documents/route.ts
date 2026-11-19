@@ -3,8 +3,9 @@ import { z } from "zod";
 import { and, count, eq } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/data";
 import { db } from "@/lib/db";
-import { assistants, documents, chunks } from "@/lib/db/schema";
+import { assistants, documents } from "@/lib/db/schema";
 import { chunkText, embedChunks } from "@/lib/rag/embed";
+import { ingestDocument } from "@/lib/rag/ingest";
 import { MAX_FILE_BYTES, UnsupportedFileError, extractText } from "@/lib/rag/extract";
 import { rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
@@ -102,19 +103,13 @@ export async function POST(req: Request, ctx: Params) {
     return fail("Indexing is temporarily unavailable. Please try again.", 502);
   }
 
-  const [document] = await db
-    .insert(documents)
-    .values({ assistantId: id, filename, content })
-    .returning();
+  let result: Awaited<ReturnType<typeof ingestDocument>>;
+  try {
+    result = await ingestDocument({ assistantId: id, filename, content, pieces, embeddings });
+  } catch (error) {
+    console.error("documents: saving failed", error);
+    return fail("We couldn't save that document. Please try again.", 500);
+  }
 
-  await db.insert(chunks).values(
-    pieces.map((piece, i) => ({
-      documentId: document.id,
-      assistantId: id,
-      content: piece,
-      embedding: embeddings[i],
-    }))
-  );
-
-  return NextResponse.json({ document, chunkCount: pieces.length });
+  return NextResponse.json(result);
 }
