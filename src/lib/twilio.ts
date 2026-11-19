@@ -18,6 +18,11 @@ export function publicUrl(req: Request) {
   return `${proto}://${host}${url.pathname}${url.search}`;
 }
 
+// The URL to paste into a Twilio number's "A call comes in" voice webhook for an assistant.
+export function phoneWebhookUrl(origin: string, assistantId: string) {
+  return `${origin.replace(/\/+$/, "")}/api/twilio/voice?assistantId=${encodeURIComponent(assistantId)}`;
+}
+
 export function escapeXml(s: string) {
   return s.replace(/[<>&'"]/g, (c) =>
     ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" }[c] as string)

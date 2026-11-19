@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { conversationIdFor, escapeXml, publicUrl } from "./twilio";
+import { conversationIdFor, escapeXml, phoneWebhookUrl, publicUrl } from "./twilio";
 
 const ASSISTANT = "88f0e737-8d43-458f-baf9-6e9575a9d0e4";
 const CALL = "CA0123456789abcdef0123456789abcdef";
@@ -67,6 +67,32 @@ describe("publicUrl", () => {
   it("preserves the path and query string exactly, and adds no '?' when there is none", () => {
     expect(publicUrl(req("https://x.com/p?a=1&b=x%20y"))).toBe("https://x.com/p?a=1&b=x%20y");
     expect(publicUrl(req("https://x.com/p"))).toBe("https://x.com/p");
+  });
+});
+
+describe("phoneWebhookUrl", () => {
+  it("builds the voice webhook URL for an assistant", () => {
+    expect(phoneWebhookUrl("https://callwise-three.vercel.app", ASSISTANT)).toBe(
+      `https://callwise-three.vercel.app/api/twilio/voice?assistantId=${ASSISTANT}`
+    );
+  });
+
+  it("ignores trailing slashes on the origin", () => {
+    expect(phoneWebhookUrl("https://example.com/", ASSISTANT)).toBe(phoneWebhookUrl("https://example.com", ASSISTANT));
+    expect(phoneWebhookUrl("https://example.com///", ASSISTANT)).toBe(phoneWebhookUrl("https://example.com", ASSISTANT));
+  });
+
+  it("keeps a port and encodes the id safely", () => {
+    expect(phoneWebhookUrl("http://localhost:3000", ASSISTANT)).toBe(
+      `http://localhost:3000/api/twilio/voice?assistantId=${ASSISTANT}`
+    );
+    expect(phoneWebhookUrl("https://x.com", "a&b=c")).toBe("https://x.com/api/twilio/voice?assistantId=a%26b%3Dc");
+  });
+
+  it("points at the same path the webhook route listens on and uses in its own Gather action", () => {
+    const url = new URL(phoneWebhookUrl("https://x.com", ASSISTANT));
+    expect(url.pathname).toBe("/api/twilio/voice");
+    expect(url.searchParams.get("assistantId")).toBe(ASSISTANT);
   });
 });
 
