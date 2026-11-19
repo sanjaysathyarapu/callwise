@@ -1,0 +1,158 @@
+[
+  {
+    "q": "My billing date is the 31st, what happens?",
+    "answer": "your billing date moves to the 28th"
+  },
+  {
+    "q": "Can I pay with cryptocurrency?",
+    "answer": "We do not accept cash, cheques or cryptocurrency"
+  },
+  {
+    "q": "Is there a discount for paying by direct debit?",
+    "answer": "Direct debit gives a credit of 5 dollars each month"
+  },
+  {
+    "q": "How much is the fee when a payment fails twice?",
+    "answer": "A late fee of 8 dollars"
+  },
+  {
+    "q": "When does my service get cut off for non payment?",
+    "answer": "21 days after the due date, the connection is suspended"
+  },
+  {
+    "q": "How long do I have to dispute an invoice?",
+    "answer": "within 60 days of the invoice date"
+  },
+  {
+    "q": "What does it cost to transfer service when I move?",
+    "answer": "the transfer fee is 49 dollars"
+  },
+  {
+    "q": "How fast is the cheapest plan and what does it cost?",
+    "answer": "symmetrical speeds of 300 megabits per second and costs 45 dollars a month"
+  },
+  {
+    "q": "Which plan includes a mesh extender?",
+    "answer": "It includes a Wi-Fi 6 router and one mesh extender"
+  },
+  {
+    "q": "Do business plans come with a static IP?",
+    "answer": "a static IP address and priority support"
+  },
+  {
+    "q": "Is there a cancellation fee on home plans?",
+    "answer": "can be cancelled at any time with no fee"
+  },
+  {
+    "q": "What if I cancel a business plan early?",
+    "answer": "charged 50 percent of the remaining months"
+  },
+  {
+    "q": "What happens if I do not return the router?",
+    "answer": "120 dollars for a router and 60 dollars for an extender"
+  },
+  {
+    "q": "Do new customers get a free month?",
+    "answer": "the first month free on any home plan"
+  },
+  {
+    "q": "What does the red blinking light on the wall box mean?",
+    "answer": "A blinking red light means the line is cut or damaged"
+  },
+  {
+    "q": "How do I know if slow speed is a Wi-Fi problem?",
+    "answer": "within 10 percent of your plan speed, the line is fine"
+  },
+  {
+    "q": "I forgot my Wi-Fi password after changing it, how do I recover?",
+    "answer": "hold the reset button on the router for 10 seconds"
+  },
+  {
+    "q": "Will I get compensation for a long outage?",
+    "answer": "we credit one thirtieth of the monthly price for each full day"
+  },
+  {
+    "q": "What does an amber router light indicate?",
+    "answer": "An amber light means the router cannot reach our network"
+  },
+  {
+    "q": "When can I call support on a Saturday?",
+    "answer": "on weekends from 9 AM to 5 PM"
+  },
+  {
+    "q": "How much does it cost to move an installation appointment last minute?",
+    "answer": "later changes cost 25 dollars"
+  },
+  {
+    "q": "How long does a normal installation take?",
+    "answer": "A standard installation takes two to three hours"
+  },
+  {
+    "q": "What if fiber has not reached my street?",
+    "answer": "you can join the waiting list"
+  },
+  {
+    "q": "How long are support calls kept?",
+    "answer": "kept for 90 days"
+  },
+  {
+    "q": "Can I get my data deleted?",
+    "answer": "Deleting data requires closing the account"
+  },
+  {
+    "q": "Do you sell my personal information?",
+    "answer": "We never sell personal data"
+  },
+  {
+    "q": "Is Safe Browsing included in the price?",
+    "answer": "free on all plans"
+  },
+  {
+    "q": "What is the capital of Australia?",
+    "answer": null
+  },
+  {
+    "q": "Do you offer mobile phone plans?",
+    "answer": null
+  },
+  {
+    "q": "How do I install Windows updates?",
+    "answer": null
+  },
+  {
+    "q": "What is your return policy for shoes?",
+    "answer": null
+  },
+  {
+    "q": "Who is the CEO of Brightwave?",
+    "answer": null
+  },
+  {
+    "q": "Can I watch TV channels through my internet plan?",
+    "answer": null
+  },
+  {
+    "q": "What is the best programming language to learn?",
+    "answer": null
+  },
+  {
+    "q": "Do you sell laptops?",
+    "answer": null
+  },
+  {
+    "q": "How do I cook rice?",
+    "answer": null
+  },
+  {
+    "q": "What is the weather like today?",
+    "answer": null
+  },
+  {
+    "q": "Can I get a landline phone number with my plan?",
+    "answer": null
+  },
+  {
+    "q": "How do I reset my Netflix password?",
+    "answer": null
+  }
+]

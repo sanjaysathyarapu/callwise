@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "eval": "node scripts/eval.mjs",
+    "eval:chunking": "node scripts/eval-chunking.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
