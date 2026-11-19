@@ -1,0 +1,61 @@
+name: Uptime
+
+on:
+  schedule:
+    # Every 15 minutes. GitHub may delay scheduled runs, and it pauses them after 60 days
+    # without repository activity; re-enable from the Actions tab if that happens.
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+# Never run two checks at once, so the issue is not created twice.
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Check the live site
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      LABEL: uptime
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check /demo and /api/health
+        id: check
+        run: |
+          set +e
+          bash scripts/uptime-check.sh | tee result.txt
+          status="${PIPESTATUS[0]}"
+          if [ "$status" -ne 0 ]; then echo "failed=true" >> "$GITHUB_OUTPUT"; else echo "failed=false" >> "$GITHUB_OUTPUT"; fi
+
+      # One issue labelled "uptime" tracks the outage. It is opened on the first failure,
+      # refreshed while the site stays down, and closed when the checks pass again.
+      - name: Update the uptime issue
+        run: |
+          gh label create "$LABEL" --color D93F0B --description "Automated uptime tracking" 2>/dev/null || true
+          existing="$(gh issue list --label "$LABEL" --state open --json number --jq '.[0].number // empty')"
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          now="$(date -u +'%Y-%m-%d %H:%M UTC')"
+          body="$(printf 'Latest check: %s ([run](%s))\n\n```\n%s\n```\n' "$now" "$run_url" "$(cat result.txt)")"
+
+          if [ "${{ steps.check.outputs.failed }}" = "true" ]; then
+            if [ -z "$existing" ]; then
+              gh issue create --label "$LABEL" --title "Uptime check failing" --body "$body"
+            else
+              gh issue edit "$existing" --body "$body"
+            fi
+          elif [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "Recovered at $now ([run]($run_url))."
+            gh issue close "$existing"
+          fi
+
+      - name: Fail the run when the site is down
+        if: steps.check.outputs.failed == 'true'
+        run: exit 1
