@@ -22,7 +22,7 @@ Billing, Stripe, pricing tiers, self-serve phone-number purchase, and features b
 - [x] **4. Phone switch and copy.** Whether the phone line is enabled is derived from the environment (`TWILIO_AUTH_TOKEN`), the "Premium" framing is replaced with neutral wording, and phone setup (the webhook URL) is shown only when it is enabled. The health report, the assistant pages and the webhook all follow the same switch.
 - [x] **5. Runbook.** `docs/RUNBOOK.md`: enable the phone for a demo, reseed the demo, rotate secrets, check OpenAI usage and limits, and respond to an uptime alert.
 - [x] **6. Versioned migrations.** Baseline migration generated from the current schema and marked as applied in production, a `db:migrate` script, and the README updated to match.
-- [ ] **7. HNSW vector index.** An index on `chunks.embedding` using cosine distance, matching the `<=>` operator, so retrieval stops scanning every row.
+- [x] **7. HNSW vector index.** An index on `chunks.embedding` using cosine distance, matching the `<=>` operator, so retrieval stops scanning every row.
 - [x] **8. Atomic ingest.** A document and its chunks are created all-or-nothing, with a test for the failure path.
 - [x] **9. Relevance threshold and prompt hardening.** Discard chunks that are too distant, answer "I don't know" when nothing is relevant, delimit retrieved text as data, and rebuild earlier turns from the database instead of trusting the client.
 - [x] **10. README and decision records.** An architecture diagram, features, local setup, testing, migrations, and decision records for pgvector, session revocation, Twilio `<Gather>` and Postgres-backed rate limiting.
