@@ -29,6 +29,10 @@ Vercel applies a changed variable only to **new** deployments, so after any chan
 
 Roll back a bad deploy: Vercel project, Production Deployment tile, **Instant Rollback**, pick the last good deployment, confirm. Environment variables are not rolled back. After a rollback Vercel stops auto-assigning new pushes to production; use **Manage** on the tile and promote a deployment to resume normal deploys.
 
+## Uptime alerts
+
+A scheduled GitHub Action (`.github/workflows/uptime.yml`, every 15 minutes) calls `/demo` and `/api/health`, retrying a few times so one slow request does not alert. While either fails it keeps a single open issue labelled `uptime` up to date, and it closes the issue with a "Recovered" comment when the checks pass again. Triage with the health table above, starting from the failing line in the issue. To run the same checks by hand: `bash scripts/uptime-check.sh`. GitHub pauses scheduled workflows after 60 days without repository activity; re-enable it from the Actions tab if that happens.
+
 ## Enable the phone line for a demo
 
 The phone line is off when `TWILIO_AUTH_TOKEN` is unset. About ten minutes:
