@@ -17,7 +17,7 @@ Billing, Stripe, pricing tiers, self-serve phone-number purchase, and features b
 
 - [x] **0. Baseline check.** Local production build plus a production smoke test. Found and fixed an expired OpenAI API key that had silently broken chat and document indexing.
 - [x] **1. Foundations for testing.** Vitest and a `test` script, unit tests for the chunker, slugs, conversation filters and Twilio helpers, the Twilio helpers extracted into `src/lib/twilio.ts`, an expanded `CLAUDE.md`, and this roadmap. Tests found and fixed three bugs: accented characters split slugs, truncated slugs could contain a double hyphen, and comma-separated forwarded headers made the Twilio signature check throw.
-- [ ] **2. CI.** GitHub Actions on pushes to `main` and on pull requests: install, lint, typecheck, test, and build with dummy environment variables.
+- [x] **2. CI.** GitHub Actions on pushes to `main` and on pull requests: install, lint, typecheck, test, and build with placeholder environment variables. Runs on Linux with Node 22.
 - [ ] **3. Health endpoint.** `GET /api/health` runs a database round trip and reports which configuration groups are present as booleans, never values.
 - [ ] **4. Phone switch and copy.** Derive whether the phone line is enabled from the environment, replace the "Premium" framing with neutral wording, and show phone setup only when it is enabled.
 - [ ] **5. Runbook.** `docs/RUNBOOK.md`: enable the phone for a demo, reseed the demo, rotate secrets, check OpenAI usage and limits, and respond to an uptime alert.
