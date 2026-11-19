@@ -9,9 +9,9 @@ import { conversationIdFor, escapeXml, publicUrl } from "@/lib/twilio";
 import twilio from "twilio";
 import { z } from "zod";
 
-// Twilio webhook for the premium phone-number tier. Uses Twilio's built-in
-// speech recognition (<Gather input="speech">) and TTS (<Say>) so no extra
-// STT/TTS vendor is needed — same RAG pipeline as the web chat/voice widgets.
+// Twilio webhook for the optional phone line (off unless TWILIO_AUTH_TOKEN is set).
+// Uses Twilio's built-in speech recognition (<Gather input="speech">) and TTS (<Say>)
+// so no extra STT/TTS vendor is needed — same RAG pipeline as the web chat/voice widgets.
 export async function POST(req: Request) {
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   if (!authToken) return new Response("Twilio is not configured", { status: 503 });

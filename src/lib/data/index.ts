@@ -45,7 +45,6 @@ export const getOwnedAssistant = cache(async (id: string) => {
 export interface AssistantSummary {
   id: string;
   name: string;
-  tier: "free" | "premium";
   slug: string | null;
   createdAt: Date;
   documents: number;
@@ -87,7 +86,6 @@ export async function getAssistantSummaries(userId: string): Promise<AssistantSu
     return {
       id: a.id,
       name: a.name,
-      tier: a.tier,
       slug: a.slug,
       createdAt: a.createdAt,
       documents: docRows.find((r) => r.assistantId === a.id)?.n ?? 0,

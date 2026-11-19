@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { FileText, MessageSquare, Phone } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LocalTime } from "@/components/LocalTime";
@@ -10,14 +9,9 @@ export function AssistantCard({ a }: { a: AssistantSummary }) {
   return (
     <Card className="transition-shadow hover:shadow-md">
       <CardContent className="flex flex-col gap-4">
-        <div className="flex items-start justify-between gap-2">
-          <Link href={`/assistants/${a.id}`} className="min-w-0 font-medium hover:underline">
-            <span className="block truncate">{a.name}</span>
-          </Link>
-          <Badge variant={a.tier === "premium" ? "default" : "secondary"} className="capitalize">
-            {a.tier}
-          </Badge>
-        </div>
+        <Link href={`/assistants/${a.id}`} className="min-w-0 font-medium hover:underline">
+          <span className="block truncate">{a.name}</span>
+        </Link>
         <div className="flex gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <FileText className="size-3.5" /> {a.documents} {a.documents === 1 ? "doc" : "docs"}

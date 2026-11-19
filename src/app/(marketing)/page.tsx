@@ -8,13 +8,13 @@ import { getCurrentUser } from "@/lib/data";
 const steps = [
   { icon: Upload, title: "Add your knowledge", body: "Upload PDFs, Word docs or paste text. Callwise indexes everything for instant lookup." },
   { icon: MessagesSquare, title: "Test it your way", body: "Chat or talk to your assistant and check every answer against your own documents." },
-  { icon: Code2, title: "Put it in front of customers", body: "Share a link, drop a chat bubble on your site, or give customers a phone number." },
+  { icon: Code2, title: "Put it in front of customers", body: "Share a link, drop a chat bubble on your site, or connect a phone line." },
 ];
 
 const features = [
   { icon: FileUp, title: "Answers from your documents", body: "Grounded in what you upload, and it says so when it doesn't know instead of guessing." },
   { icon: Mic, title: "Chat and voice", body: "Customers can type or speak. Replies can be read aloud for voice questions." },
-  { icon: Phone, title: "Phone support", body: "A dedicated number that answers calls with the same knowledge and remembers the conversation." },
+  { icon: Phone, title: "Phone support", body: "Callers get the same knowledge by voice, and the assistant remembers the conversation during the call. Live demo available on request." },
   { icon: BarChart3, title: "See every conversation", body: "Read transcripts across chat, voice and phone, and track activity over time." },
   { icon: Code2, title: "Embed anywhere", body: "One script tag for a floating chat bubble, or a public page you can share." },
   { icon: ShieldCheck, title: "Built with guardrails", body: "Rate limiting, signed phone webhooks and input limits protect your assistant and your bill." },
@@ -76,26 +76,23 @@ export default async function HomePage() {
       <section className="mx-auto grid w-full max-w-4xl gap-4 px-6 py-16 md:grid-cols-2">
         <Card>
           <CardContent className="flex flex-col gap-3">
-            <h3 className="text-lg font-semibold">Free</h3>
-            <p className="text-sm text-muted-foreground">Everything you need to put an assistant on your website.</p>
+            <h3 className="text-lg font-semibold">Chat and browser voice</h3>
+            <p className="text-sm text-muted-foreground">Available on every assistant.</p>
             <ul className="flex flex-col gap-1.5 text-sm">
-              <li>Unlimited testing</li>
-              <li>Chat and browser voice</li>
+              <li>Type or speak to the assistant</li>
               <li>Public link and website chat bubble</li>
               <li>Conversation history</li>
             </ul>
           </CardContent>
         </Card>
-        <Card className="border-primary">
+        <Card>
           <CardContent className="flex flex-col gap-3">
-            <h3 className="flex items-center gap-2 text-lg font-semibold">
-              Premium <Badge>Phone</Badge>
-            </h3>
-            <p className="text-sm text-muted-foreground">Everything in Free, plus a phone line for your business.</p>
+            <h3 className="text-lg font-semibold">Phone line</h3>
+            <p className="text-sm text-muted-foreground">Live demo available on request.</p>
             <ul className="flex flex-col gap-1.5 text-sm">
-              <li>A dedicated phone number</li>
-              <li>Calls answered from your documents</li>
-              <li>Call transcripts and caller numbers</li>
+              <li>Callers reach the same assistant by voice</li>
+              <li>Calls are answered from your documents</li>
+              <li>Transcripts and caller numbers appear with your conversations</li>
             </ul>
           </CardContent>
         </Card>

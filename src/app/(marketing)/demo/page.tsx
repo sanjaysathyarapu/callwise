@@ -53,7 +53,7 @@ export default async function DemoPage() {
           <li>Sign up and create an assistant for your business.</li>
           <li>Upload your documents: FAQs, policies, product info.</li>
           <li>Your customers get a chat and voice assistant that answers from those documents.</li>
-          <li>Premium: a dedicated phone number, so customers can simply call and talk to the same assistant.</li>
+          <li>Phone: the same assistant can answer calls. A live phone demo is available on request.</li>
         </ol>
         <Link href={authed ? "/assistants" : "/signup"} className={buttonVariants({ className: "self-start" })}>
           {authed ? "Go to your assistants" : "Create your assistant"}
