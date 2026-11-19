@@ -2,7 +2,7 @@
 
 # Callwise project guide
 
-Callwise is a multi-tenant AI customer-support platform. A business signs up, uploads documents, and gets a chat, browser-voice and phone assistant that answers only from those documents. The finishing plan is in `docs/ROADMAP.md`.
+Callwise is a multi-tenant AI customer-support platform. A business signs up, uploads documents, and gets a chat, browser-voice and phone assistant that answers only from those documents. The finishing plan is in `docs/ROADMAP.md`; operational steps (enable the phone, reseed, rotate secrets, health alerts) are in `docs/RUNBOOK.md`.
 
 ## Commands
 
