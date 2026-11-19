@@ -1,28 +1,13 @@
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
-import crypto from "crypto";
 import { db } from "@/lib/db";
 import { assistants, conversations, messages } from "@/lib/db/schema";
 import { count, desc, eq } from "drizzle-orm";
 import { retrieveContext } from "@/lib/rag/retrieve";
 import { rateLimit } from "@/lib/rate-limit";
+import { conversationIdFor, escapeXml, publicUrl } from "@/lib/twilio";
 import twilio from "twilio";
 import { z } from "zod";
-
-// One stable conversation per call, so every webhook turn of a call shares history.
-function conversationIdFor(callSid: string, assistantId: string) {
-  const h = crypto.createHash("sha1").update(`${assistantId}:${callSid}`).digest("hex");
-  return `${h.slice(0, 8)}-${h.slice(8, 12)}-5${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`;
-}
-
-// Twilio signs the exact public URL it requested, so rebuild it from the
-// forwarding headers (the internal req.url differs behind Vercel/ngrok).
-function publicUrl(req: Request) {
-  const url = new URL(req.url);
-  const proto = req.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "");
-  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? url.host;
-  return `${proto}://${host}${url.pathname}${url.search}`;
-}
 
 // Twilio webhook for the premium phone-number tier. Uses Twilio's built-in
 // speech recognition (<Gather input="speech">) and TTS (<Say>) so no extra
@@ -133,11 +118,5 @@ function twiml(inner: string) {
   return new Response(
     `<?xml version="1.0" encoding="UTF-8"?><Response>${inner}</Response>`,
     { headers: { "Content-Type": "text/xml" } }
-  );
-}
-
-function escapeXml(s: string) {
-  return s.replace(/[<>&'"]/g, (c) =>
-    ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" }[c] as string)
   );
 }
