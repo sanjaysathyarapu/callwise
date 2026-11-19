@@ -4,7 +4,8 @@ import { and, count, eq } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/data";
 import { db } from "@/lib/db";
 import { assistants, documents } from "@/lib/db/schema";
-import { chunkText, embedChunks } from "@/lib/rag/embed";
+import { chunkStructured } from "@/lib/rag/chunk";
+import { embedChunks } from "@/lib/rag/embed";
 import { ingestDocument } from "@/lib/rag/ingest";
 import { MAX_FILE_BYTES, UnsupportedFileError, extractText } from "@/lib/rag/extract";
 import { rateLimit, tooManyRequests } from "@/lib/rate-limit";
@@ -94,7 +95,7 @@ export async function POST(req: Request, ctx: Params) {
     return fail(`That document is too long (limit is about ${MAX_CHARS.toLocaleString()} characters).`, 400);
   }
 
-  const pieces = chunkText(content);
+  const pieces = chunkStructured(content);
   let embeddings: number[][];
   try {
     embeddings = await embedChunks(pieces);
