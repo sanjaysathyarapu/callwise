@@ -15,6 +15,10 @@ export async function embedChunks(chunks: string[]): Promise<number[][]> {
 
 // Naive fixed-size chunker with overlap — good enough for short support docs/FAQs.
 export function chunkText(text: string, chunkSize = 800, overlap = 150): string[] {
+  // With overlap >= chunkSize the window never advances and the loop below runs forever.
+  if (!(chunkSize > 0 && overlap >= 0 && overlap < chunkSize)) {
+    throw new RangeError("chunkText requires chunkSize > 0 and 0 <= overlap < chunkSize");
+  }
   const chunks: string[] = [];
   let start = 0;
   while (start < text.length) {
