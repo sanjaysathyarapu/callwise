@@ -7,6 +7,7 @@ import {
   pgEnum,
   integer,
   primaryKey,
+  index,
 } from "drizzle-orm/pg-core";
 
 // pgvector column type — stored as Postgres `vector(1536)` (OpenAI text-embedding-3-small dimension)
@@ -64,18 +65,25 @@ export const documents = pgTable("documents", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const chunks = pgTable("chunks", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  documentId: uuid("document_id")
-    .notNull()
-    .references(() => documents.id, { onDelete: "cascade" }),
-  assistantId: uuid("assistant_id")
-    .notNull()
-    .references(() => assistants.id, { onDelete: "cascade" }),
-  content: text("content").notNull(),
-  embedding: vector("embedding").notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+export const chunks = pgTable(
+  "chunks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    documentId: uuid("document_id")
+      .notNull()
+      .references(() => documents.id, { onDelete: "cascade" }),
+    assistantId: uuid("assistant_id")
+      .notNull()
+      .references(() => assistants.id, { onDelete: "cascade" }),
+    content: text("content").notNull(),
+    embedding: vector("embedding").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [
+    // Cosine distance, to match the `<=>` operator used in src/lib/rag/retrieve.ts.
+    index("chunks_embedding_hnsw_idx").using("hnsw", t.embedding.op("vector_cosine_ops")),
+  ]
+);
 
 export const conversations = pgTable("conversations", {
   id: uuid("id").primaryKey().defaultRandom(),
