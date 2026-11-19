@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Deterministic suffix: randomBytes(3) -> "abcdef".
 const { randomBytes } = vi.hoisted(() => ({
-  randomBytes: vi.fn((_n: number) => Buffer.from([0xab, 0xcd, 0xef])),
+  randomBytes: vi.fn<(size: number) => Buffer>(() => Buffer.from([0xab, 0xcd, 0xef])),
 }));
 vi.mock("crypto", () => ({ default: { randomBytes } }));
 
