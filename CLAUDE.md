@@ -15,6 +15,7 @@ Callwise is a multi-tenant AI customer-support platform. A business signs up, up
 | `npm test` | Vitest, run once |
 | `npm run test:watch` | Vitest in watch mode |
 | `npm run db:generate` | Generate a Drizzle migration from `src/lib/db/schema.ts` |
+| `npm run db:migrate` | Apply pending migrations in `drizzle/` to `DATABASE_URL` |
 
 `npm run db:push` exists but must never be pointed at production; use migrations (see Hard rules).
 

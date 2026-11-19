@@ -71,14 +71,10 @@ npm install
 cp .env.example .env.local   # then fill in the values
 ```
 
-Enable pgvector once in your database, then push the schema:
-
-```sql
-CREATE EXTENSION IF NOT EXISTS vector;
-```
+Apply the migrations (they enable pgvector and create the tables), then start the app:
 
 ```bash
-npm run db:push
+npm run db:migrate
 npm run dev
 ```
 
@@ -92,6 +88,17 @@ Open http://localhost:3000, create an account, add an assistant, paste in a docu
 | `OPENAI_API_KEY` | Embeddings and chat completions |
 | `AUTH_SECRET` | Auth.js session signing (`npx auth secret`) |
 | `TWILIO_AUTH_TOKEN` | Optional. Switches the phone line on: the voice webhook answers 503 without it and uses it to verify Twilio's request signatures |
+
+## Database migrations
+
+The schema lives in `src/lib/db/schema.ts` and is versioned as SQL files in `drizzle/`. The baseline migration (`0000_baseline.sql`) enables the `vector` extension and creates every table.
+
+- Change the schema, then run `npm run db:generate` to create the next migration and commit it.
+- Apply migrations with `npm run db:migrate` (it uses `DATABASE_URL`).
+- Try every change on a Neon branch of the production database first, and check that `npx drizzle-kit generate` reports no drift.
+- `db:push` is for throwaway local databases only; never run it against production.
+
+A database whose tables were created before migrations existed is brought in line once with `DATABASE_URL=<url> node scripts/baseline-migration.mjs`. It records the baseline as applied without running it.
 
 ## Status
 
