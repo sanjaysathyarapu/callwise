@@ -1,6 +1,6 @@
 # Callwise
 
-AI customer support that businesses can train on their own documents. Sign up, create an assistant, upload your docs, and get a chat and voice assistant that answers using only your content. A dedicated phone number is the premium tier.
+AI customer support that businesses can train on their own documents. Sign up, create an assistant, upload your docs, and get a chat and voice assistant that answers using only your content. An optional phone line can answer calls with the same assistant.
 
 **Live demo:** https://callwise-three.vercel.app/demo (a fictional outdoor-gear store, no sign-up needed)
 
@@ -11,7 +11,7 @@ AI customer support that businesses can train on their own documents. Sign up, c
 - **Grounded answers:** each question retrieves the closest chunks and the model answers only from them, and says so when it doesn't know.
 - **Streaming chat:** responses stream token by token via the Vercel AI SDK.
 - **Voice in the browser:** speech input and spoken replies use the Web Speech API, so voice needs no paid speech vendor. Best supported in Chrome.
-- **Phone tier:** a Twilio number routes calls to the same retrieval pipeline. Twilio's built-in speech recognition and text-to-speech handle the audio, calls keep conversation memory across turns, and every call is logged.
+- **Optional phone line:** a Twilio number routes calls to the same retrieval pipeline. Twilio's built-in speech recognition and text-to-speech handle the audio, calls keep conversation memory across turns, and every call is logged. It is off unless `TWILIO_AUTH_TOKEN` is set, and the deploy page shows the webhook URL only when it is on.
 - **App shell and dashboard:** a sidebar layout with live stats, a 14-day activity chart, a setup checklist and recent conversations, plus per-assistant Overview, Knowledge, Test, Conversations, Deploy and Settings tabs.
 - **Deploy anywhere:** every assistant gets a public chat page, a one-line website chat bubble (`widget.js`) and an iframe embed.
 - **Auth and account:** email and password sign-up with Auth.js (server actions, bcrypt-hashed passwords, rate-limited attempts), session-aware navigation, and protected routes that return you to where you were going. Account settings cover profile, password change, sign out of all devices (server-side session revocation), data export and account deletion.
@@ -91,11 +91,11 @@ Open http://localhost:3000, create an account, add an assistant, paste in a docu
 | `DATABASE_URL` | Neon Postgres connection string |
 | `OPENAI_API_KEY` | Embeddings and chat completions |
 | `AUTH_SECRET` | Auth.js session signing (`npx auth secret`) |
-| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` | Phone tier (optional for now) |
+| `TWILIO_AUTH_TOKEN` | Optional. Switches the phone line on: the voice webhook answers 503 without it and uses it to verify Twilio's request signatures |
 
 ## Status
 
-Deployed on Vercel with Neon Postgres. Working end to end: sign-up, login, assistant management, file and text indexing, grounded chat with browser voice, and a phone line with call memory. Self-serve number provisioning per business is not built; the phone tier is demonstrated with a single Twilio number.
+Deployed on Vercel with Neon Postgres. Working end to end: sign-up, login, assistant management, file and text indexing, grounded chat with browser voice, and an optional phone line with call memory. Self-serve number provisioning per business is not built; the phone line is demonstrated with a single Twilio number on request.
 
 ## Seeding the demo
 
