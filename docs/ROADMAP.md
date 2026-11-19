@@ -34,4 +34,4 @@ Billing, Stripe, pricing tiers, self-serve phone-number purchase, and features b
 - [x] **13. Evaluation harness.** About twenty questions over the demo knowledge base, including unanswerable ones, reporting hit@1, hit@5 and how often the assistant correctly declines.
 - [x] **14. Structure-aware chunking.** Split on headings, paragraphs and sentences instead of fixed character offsets; kept only if the evaluation does not regress.
 - [x] **15. Evaluation results in the README.** Honest before and after numbers from items 13 and 14.
-- [ ] **16. Background texture.** Settle the opacity of the decorative background, or remove it.
+- [x] **16. Background texture.** Settled: kept at the raised opacity (0.12-0.18) after the first version proved too faint to notice; it stays at the page edges and does not touch text.
