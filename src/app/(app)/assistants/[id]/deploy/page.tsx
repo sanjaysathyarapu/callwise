@@ -4,8 +4,10 @@ import { ExternalLink } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CopyField } from "@/components/CopyField";
+import { configStatus } from "@/lib/config";
 import { getOwnedAssistant } from "@/lib/data";
 import { getOrigin } from "@/lib/origin";
+import { phoneWebhookUrl } from "@/lib/twilio";
 
 export const metadata: Metadata = { title: "Deploy" };
 export const dynamic = "force-dynamic";
@@ -15,6 +17,7 @@ export default async function DeployPage({ params }: { params: Promise<{ id: str
   const assistant = await getOwnedAssistant(id);
   const origin = await getOrigin();
   const slug = assistant.slug;
+  const phoneEnabled = configStatus().phone;
 
   if (!slug) {
     return <p className="text-sm text-muted-foreground">This assistant has no public link yet.</p>;
@@ -63,20 +66,22 @@ export default async function DeployPage({ params }: { params: Promise<{ id: str
 
       <Card>
         <CardHeader>
-          <CardTitle>Phone number</CardTitle>
+          <CardTitle>Phone line</CardTitle>
           <CardDescription>
-            {assistant.twilioNumber
-              ? "Customers can call this number to talk to your assistant."
-              : "Give customers a number to call. Available on the Premium plan."}
+            {phoneEnabled
+              ? "Callers reach this assistant through a Twilio number whose voice webhook points at this app."
+              : "The phone line is switched off on this deployment. Browser chat and voice are unaffected."}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          {assistant.twilioNumber ? (
-            <CopyField value={assistant.twilioNumber} />
-          ) : (
-            <p className="text-sm text-muted-foreground">Not enabled on this assistant.</p>
-          )}
-        </CardContent>
+        {phoneEnabled && (
+          <CardContent className="flex flex-col gap-3">
+            {assistant.twilioNumber && <CopyField value={assistant.twilioNumber} />}
+            <p className="text-xs text-muted-foreground">
+              In the Twilio console, set the number&apos;s &quot;A call comes in&quot; webhook (HTTP POST) to:
+            </p>
+            <CopyField value={phoneWebhookUrl(origin, assistant.id)} />
+          </CardContent>
+        )}
       </Card>
     </div>
   );

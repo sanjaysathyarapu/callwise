@@ -3,6 +3,7 @@ import { Check, Circle, FileText, Layers, MessageSquare, Phone } from "lucide-re
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LocalTime } from "@/components/LocalTime";
+import { configStatus } from "@/lib/config";
 import { getAssistantStats, getOwnedAssistant } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -63,7 +64,7 @@ export default async function AssistantOverviewPage({ params }: { params: Promis
 
         <Card>
           <CardHeader>
-            <CardTitle>Plan and channels</CardTitle>
+            <CardTitle>Channels</CardTitle>
             <CardDescription>
               {stats.lastActivity ? (
                 <>
@@ -77,11 +78,13 @@ export default async function AssistantOverviewPage({ params }: { params: Promis
           <CardContent className="flex flex-col gap-3 text-sm">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Web chat and voice</span>
-              <span className="font-medium">Included</span>
+              <span className="font-medium">Available</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Phone number</span>
-              <span className="font-medium">{assistant.twilioNumber ?? "Premium feature"}</span>
+              <span className="text-muted-foreground">Phone line</span>
+              <span className="font-medium">
+                {configStatus().phone ? (assistant.twilioNumber ?? "Not connected") : "Disabled"}
+              </span>
             </div>
             <Link href={`/assistants/${id}/deploy`} className={buttonVariants({ variant: "outline", size: "sm", className: "self-start" })}>
               Deployment options
