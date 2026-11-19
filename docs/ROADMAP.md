@@ -25,7 +25,7 @@ Billing, Stripe, pricing tiers, self-serve phone-number purchase, and features b
 - [ ] **7. HNSW vector index.** An index on `chunks.embedding` using cosine distance, matching the `<=>` operator, so retrieval stops scanning every row.
 - [x] **8. Atomic ingest.** A document and its chunks are created all-or-nothing, with a test for the failure path.
 - [x] **9. Relevance threshold and prompt hardening.** Discard chunks that are too distant, answer "I don't know" when nothing is relevant, delimit retrieved text as data, and rebuild earlier turns from the database instead of trusting the client.
-- [ ] **10. README and decision records.** An architecture diagram, features, local setup, testing, migrations, and decision records for pgvector, session revocation, Twilio `<Gather>` and Postgres-backed rate limiting.
+- [x] **10. README and decision records.** An architecture diagram, features, local setup, testing, migrations, and decision records for pgvector, session revocation, Twilio `<Gather>` and Postgres-backed rate limiting.
 
 ## Remaining items
 
@@ -33,5 +33,5 @@ Billing, Stripe, pricing tiers, self-serve phone-number purchase, and features b
 - [ ] **12. Uptime workflow.** A scheduled GitHub Action that checks `/demo` and `/api/health` and keeps a single `uptime` issue up to date.
 - [x] **13. Evaluation harness.** About twenty questions over the demo knowledge base, including unanswerable ones, reporting hit@1, hit@5 and how often the assistant correctly declines.
 - [x] **14. Structure-aware chunking.** Split on headings, paragraphs and sentences instead of fixed character offsets; kept only if the evaluation does not regress.
-- [ ] **15. Evaluation results in the README.** Honest before and after numbers from items 13 and 14.
+- [x] **15. Evaluation results in the README.** Honest before and after numbers from items 13 and 14.
 - [ ] **16. Background texture.** Settle the opacity of the decorative background, or remove it.
