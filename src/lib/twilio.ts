@@ -10,8 +10,11 @@ export function conversationIdFor(callSid: string, assistantId: string) {
 // forwarding headers (the internal req.url differs behind Vercel/ngrok).
 export function publicUrl(req: Request) {
   const url = new URL(req.url);
-  const proto = req.headers.get("x-forwarded-proto") ?? url.protocol.replace(":", "");
-  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? url.host;
+  // Behind more than one proxy these headers can be comma-separated lists; the
+  // first entry is the one the client actually used.
+  const first = (value: string | null) => value?.split(",")[0].trim() || null;
+  const proto = first(req.headers.get("x-forwarded-proto")) ?? url.protocol.replace(":", "");
+  const host = first(req.headers.get("x-forwarded-host")) ?? req.headers.get("host") ?? url.host;
   return `${proto}://${host}${url.pathname}${url.search}`;
 }
 

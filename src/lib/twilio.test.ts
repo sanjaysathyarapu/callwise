@@ -51,6 +51,14 @@ describe("publicUrl", () => {
     expect(publicUrl(r)).toBe(`http://public.example.com${path}`);
   });
 
+  it("uses the first value when a chain of proxies sends comma-separated forwarded headers", () => {
+    const r = req(`http://localhost:3000${path}`, {
+      "x-forwarded-proto": "https, http",
+      "x-forwarded-host": "public.example.com, internal.local",
+    });
+    expect(publicUrl(r)).toBe(`https://public.example.com${path}`);
+  });
+
   it("falls back to the URL's own host when no headers are present", () => {
     expect(publicUrl(req(`http://localhost:3000${path}`))).toBe(`http://localhost:3000${path}`);
     expect(publicUrl(req(`https://x.example.com${path}`))).toBe(`https://x.example.com${path}`);
