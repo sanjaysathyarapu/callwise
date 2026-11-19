@@ -37,6 +37,18 @@ describe("makeSlug", () => {
     expect(makeSlug("日本語")).toBe("assistant-abcdef");
   });
 
+  it("strips accents instead of splitting words at them", () => {
+    expect(makeSlug("Café Crème")).toBe("cafe-creme-abcdef");
+    expect(makeSlug("Zoë's Bäckerei")).toBe("zoe-s-backerei-abcdef");
+  });
+
+  it("never leaves a trailing hyphen on the readable part after truncating", () => {
+    // The 40-character cut lands right after the hyphen that precedes "tail".
+    const slug = makeSlug(`${"x".repeat(39)} tail`);
+    expect(slug).toBe(`${"x".repeat(39)}-abcdef`);
+    expect(slug).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*-[0-9a-f]{6}$/);
+  });
+
   it("appends a suffix made from 3 random bytes (6 hex characters)", () => {
     makeSlug("x");
     expect(randomBytes).toHaveBeenCalledWith(3);
