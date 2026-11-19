@@ -3,6 +3,7 @@ import { openai } from "@ai-sdk/openai";
 import { db } from "@/lib/db";
 import { assistants, conversations, messages } from "@/lib/db/schema";
 import { count, desc, eq } from "drizzle-orm";
+import { buildSystemPrompt, filterRelevant } from "@/lib/rag/prompt";
 import { retrieveContext } from "@/lib/rag/retrieve";
 import { rateLimit } from "@/lib/rate-limit";
 import { conversationIdFor, escapeXml, publicUrl } from "@/lib/twilio";
@@ -91,12 +92,11 @@ export async function POST(req: Request) {
       history = recent.reverse();
     }
 
-    const context = await retrieveContext(assistant.id, speechResult);
-    const contextBlock = context.map((c) => `- ${c.content}`).join("\n");
+    const context = filterRelevant(await retrieveContext(assistant.id, speechResult));
 
     const { text } = await generateText({
       model: openai("gpt-4o-mini"),
-      system: `${assistant.systemPrompt}\n\nRelevant context:\n${contextBlock || "(no matching documents found)"}`,
+      system: buildSystemPrompt(assistant.systemPrompt, context),
       messages: [...history, { role: "user", content: speechResult }],
       maxOutputTokens: 300,
     });

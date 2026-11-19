@@ -1,14 +1,15 @@
-import { streamText, convertToModelMessages, type UIMessage } from "ai";
+import { streamText, type ModelMessage, type UIMessage } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { assistants, conversations, messages as messagesTable } from "@/lib/db/schema";
+import { buildSystemPrompt, filterRelevant } from "@/lib/rag/prompt";
 import { retrieveContext } from "@/lib/rag/retrieve";
 import { getClientIp, rateLimit, tooManyRequests } from "@/lib/rate-limit";
 
 const MAX_QUESTION_CHARS = 1000;
-const MAX_HISTORY_MESSAGES = 12;
+const MAX_HISTORY_MESSAGES = 12; // earlier turns kept, read from our own database
 
 const bodySchema = z.object({
   assistantId: z.string().uuid(),
@@ -44,9 +45,9 @@ export async function POST(req: Request) {
   const parsed = bodySchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return json({ error: "Invalid request" }, 400);
   const { assistantId, conversationId, channel } = parsed.data;
-  const history = parsed.data.messages.slice(-MAX_HISTORY_MESSAGES);
-
-  const lastMessage = history[history.length - 1];
+  // Only the newest message is taken from the client; earlier turns are rebuilt from the
+  // database below so a caller cannot forge assistant replies or rewrite the conversation.
+  const lastMessage = parsed.data.messages[parsed.data.messages.length - 1];
   if (lastMessage.role !== "user") return json({ error: "Invalid request" }, 400);
   const question = textOf(lastMessage);
   if (!question.trim()) return json({ error: "Empty message" }, 400);
@@ -64,6 +65,7 @@ export async function POST(req: Request) {
     .limit(1);
   if (!assistant) return json({ error: "Assistant not found" }, 404);
 
+  let earlier: ModelMessage[] = [];
   if (conversationId) {
     await db
       .insert(conversations)
@@ -75,6 +77,13 @@ export async function POST(req: Request) {
       .where(eq(conversations.id, conversationId))
       .limit(1);
     if (conversation?.assistantId !== assistantId) return json({ error: "Invalid request" }, 400);
+    const recent = await db
+      .select({ role: messagesTable.role, content: messagesTable.content })
+      .from(messagesTable)
+      .where(eq(messagesTable.conversationId, conversationId))
+      .orderBy(desc(messagesTable.createdAt))
+      .limit(MAX_HISTORY_MESSAGES - 1);
+    earlier = recent.reverse();
     await db.insert(messagesTable).values({ conversationId, role: "user", content: question });
   }
 
@@ -85,12 +94,12 @@ export async function POST(req: Request) {
     console.error("chat: retrieval failed", error);
     return json({ error: "The assistant is temporarily unavailable. Please try again." }, 502);
   }
-  const contextBlock = context.map((c) => `- ${c.content}`).join("\n");
+  const relevant = filterRelevant(context);
 
   const result = streamText({
     model: openai("gpt-4o-mini"),
-    system: `${assistant.systemPrompt}\n\nRelevant context:\n${contextBlock || "(no matching documents found)"}`,
-    messages: await convertToModelMessages(history),
+    system: buildSystemPrompt(assistant.systemPrompt, relevant),
+    messages: [...earlier, { role: "user", content: question }],
     maxOutputTokens: 500,
     onError: ({ error }) => console.error("chat: model call failed", error),
     onFinish: async ({ text }) => {
