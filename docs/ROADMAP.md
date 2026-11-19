@@ -32,6 +32,6 @@ Billing, Stripe, pricing tiers, self-serve phone-number purchase, and features b
 - [x] **11. Route tests.** Chat, Twilio webhook and document routes with the database and AI SDK mocked.
 - [ ] **12. Uptime workflow.** A scheduled GitHub Action that checks `/demo` and `/api/health` and keeps a single `uptime` issue up to date.
 - [x] **13. Evaluation harness.** About twenty questions over the demo knowledge base, including unanswerable ones, reporting hit@1, hit@5 and how often the assistant correctly declines.
-- [ ] **14. Structure-aware chunking.** Split on headings, paragraphs and sentences instead of fixed character offsets; kept only if the evaluation does not regress.
+- [x] **14. Structure-aware chunking.** Split on headings, paragraphs and sentences instead of fixed character offsets; kept only if the evaluation does not regress.
 - [ ] **15. Evaluation results in the README.** Honest before and after numbers from items 13 and 14.
 - [ ] **16. Background texture.** Settle the opacity of the decorative background, or remove it.
