@@ -24,7 +24,7 @@ Billing, Stripe, pricing tiers, self-serve phone-number purchase, and features b
 - [x] **6. Versioned migrations.** Baseline migration generated from the current schema and marked as applied in production, a `db:migrate` script, and the README updated to match.
 - [ ] **7. HNSW vector index.** An index on `chunks.embedding` using cosine distance, matching the `<=>` operator, so retrieval stops scanning every row.
 - [x] **8. Atomic ingest.** A document and its chunks are created all-or-nothing, with a test for the failure path.
-- [ ] **9. Relevance threshold and prompt hardening.** Discard chunks that are too distant, answer "I don't know" when nothing is relevant, delimit retrieved text as data, and rebuild earlier turns from the database instead of trusting the client.
+- [x] **9. Relevance threshold and prompt hardening.** Discard chunks that are too distant, answer "I don't know" when nothing is relevant, delimit retrieved text as data, and rebuild earlier turns from the database instead of trusting the client.
 - [ ] **10. README and decision records.** An architecture diagram, features, local setup, testing, migrations, and decision records for pgvector, session revocation, Twilio `<Gather>` and Postgres-backed rate limiting.
 
 ## Remaining items
